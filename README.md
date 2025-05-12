@@ -21,7 +21,7 @@ RetroWedd es una aplicación web desarrollada para la gestión de invitados de u
 
  **Instalación**
 1. Clonar el repositorio:  
-git clone https://github.com/AliciaMol93/RetroWedd.git
+git clone https://github.com/AliciaMol93/TFC-RETROWEDD.git
 cd RetroWedd
 
 2. Backend – RetroWeddBackend:  
