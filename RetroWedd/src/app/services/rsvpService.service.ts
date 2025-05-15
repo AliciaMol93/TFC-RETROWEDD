@@ -7,30 +7,60 @@ import { environment } from '../../environment/environment';
 
 const CLAVE_SECRETA = 'retrowedd123';
 
+/**
+ * Servicio para manejar operaciones relacionadas con RSVP,
+ * como confirmación de asistencia, gestión de invitados, menús y sugerencias.
+ *
+ * @export
+ * @class RsvpService
+ */
+
 @Injectable({
   providedIn: 'root',
 })
 export class RsvpService {
+  /** URL base para las llamadas API */
   private apiUrl = environment.apiUrl;
+
+  /** URL para manejar sugerencias */
   private suggestionUrl = environment.suggestionUrl;
 
   constructor(private http: HttpClient) {}
 
-  //confirmacion asistencia
+  /**
+   * BehaviorSubject que mantiene el estado de asistencia del invitado.
+   * @private
+   */
   readonly #asistenciaSubject = new BehaviorSubject<boolean>(false);
+
+  /**
+   * Observable público para suscribirse a cambios en el estado de asistencia.
+   */
   readonly asistencia$ = this.#asistenciaSubject.asObservable();
 
-  // Método para obtener los menús
+  /**
+   * Obtiene los menús disponibles para el evento.
+   *
+   * @returns {Observable<any>} Observable con los menús.
+   */
   getMenus(): Observable<any> {
     return this.http.get(`${this.apiUrl}?action=getMenus`);
   }
 
-  // Método para obtener los alérgenos
+  /**
+   * Obtiene la lista de alérgenos disponibles.
+   *
+   * @returns {Observable<any>} Observable con los alérgenos.
+   */
   getAlergenos(): Observable<any> {
     return this.http.get(`${this.apiUrl}?action=getAlergenos`);
   }
 
-  //obtener el email descifrado
+  /**
+   * Obtiene el email descifrado almacenado en localStorage.
+   *
+   * @returns {(string | null)} Email descifrado o null si no existe.
+   */
   getEmailDescifrado(): string | null {
     const emailCifrado = localStorage.getItem('email');
     if (emailCifrado) {
@@ -40,12 +70,24 @@ export class RsvpService {
     return null;
   }
 
+  /**
+   * Guarda el email cifrado en localStorage usando AES.
+   *
+   * @param {string} email - Email a cifrar y guardar.
+   * @returns {void}
+   */
   guardarEmailCifrado(email: string): void {
     const emailCifrado = CryptoJS.AES.encrypt(email, CLAVE_SECRETA).toString();
     localStorage.setItem('email', emailCifrado);
   }
 
-  // Método para crear un nuevo invitado
+  /**
+   * Crea un nuevo invitado en el backend.
+   *
+   * @param {Invitado} invitado - Objeto invitado con sus datos.
+   * @returns {Observable<number>} Observable que emite el ID del invitado creado.
+   * @throws Error si no se recibe el ID del invitado.
+   */
   crearInvitado(invitado: Invitado): Observable<number> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
@@ -68,7 +110,12 @@ export class RsvpService {
     );
   }
 
-  //metodo para saber si el invitado ha confirmado la asistencia
+   /**
+   * Consulta si el invitado con el email dado ha confirmado asistencia.
+   *
+   * @param {string} email - Email del invitado.
+   * @returns {Observable<boolean>} Observable con el estado de asistencia.
+   */
   getAsistenciaStatus(email: string): Observable<boolean> {
     return this.http
       .get<{ asistencia: boolean }>(
@@ -82,7 +129,12 @@ export class RsvpService {
       );
   }
 
-  // Método para guardar una sugerencia
+  /**
+   * Envía una sugerencia de canción al backend.
+   *
+   * @param {*} suggestion - Objeto con la sugerencia a enviar.
+   * @returns {Observable<any>} Observable con la respuesta del servidor.
+   */
   saveSuggestion(suggestion: any): Observable<any> {
     console.log('Enviando sugerencia con payload:', suggestion);
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });

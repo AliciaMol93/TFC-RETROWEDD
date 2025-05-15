@@ -7,6 +7,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { response } from 'express';
 import { CommonModule } from '@angular/common';
 
+/**
+ * Componente para el formulario RSVP.
+ * Gestiona la confirmación de asistencia, selección de menú y alergias del invitado.
+ *
+ * @export
+ * @class RsvpFormComponent
+ */
+
 @Component({
   standalone:true,
   selector: 'app-rsvp-form',
@@ -14,24 +22,42 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, ReactiveFormsModule]
 })
 export default class RsvpFormComponent {
+
+  /** Servicio para manejar operaciones relacionadas con RSVP */
   rsvpService = inject(RsvpService);
+
+  /** FormBuilder para crear el formulario reactivo */
   private fb = inject(FormBuilder);
+
+  /** Manejo de formulario */
   formUtils=FormUtils;
   route = inject(ActivatedRoute);
   router = inject(Router);
 
   mensaje: string="";
 
+   /** Opciones de menú para seleccionar */
   menuOptions: string[] = ['Vegano', 'Vegetariano', 'Clásico', 'Embarazada'];
 
-  // Opciones de alérgenos
+   /** Opciones de alérgenos para seleccionar */
   alergenoOptions = [
     { name: 'Frutos secos', value: 'frutos_secos' },
     { name: 'Lactosa', value: 'lactosa' },
     { name: 'Gluten', value: 'gluten' }
   ];
 
-  // validaciones formulario
+  /**
+   * Formulario reactivo que contiene los campos del RSVP.
+   * - name: Nombre del invitado, requerido y solo letras.
+   * - apellidos: Apellidos, solo letras.
+   * - email: Correo electrónico válido y requerido.
+   * - asistencia: Confirmación de asistencia, requerido.
+   * - transporte: Indica si requiere transporte.
+   * - num_ninos: Número de niños, rango 0-3.
+   * - menus: Selección de menú, requerido.
+   * - alergenos: Grupo con los alérgenos seleccionados.
+   * - otrosAlergenos: Campo para alergias no listadas.
+   */
   myForm: FormGroup = this.fb.group({
     name: ['', [Validators.required, Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
     apellidos: ['', [Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
@@ -68,7 +94,11 @@ export default class RsvpFormComponent {
     return this.myForm.get('alergenos') as FormGroup;
   }
 
-  //Método para guardar el formulario
+  /**
+   * Maneja el envío del formulario RSVP.
+   * Valida, crea objeto invitado y llama al servicio para guardar datos.
+   * Muestra mensajes de éxito o error al usuario.
+   */
   onSave(){
   if(this.myForm.invalid){
     this.myForm.markAllAsTouched()

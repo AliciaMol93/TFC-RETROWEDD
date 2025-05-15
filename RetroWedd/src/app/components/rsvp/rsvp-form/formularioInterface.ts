@@ -1,3 +1,9 @@
+/**
+ * Interface que representa los datos del formulario RSVP.
+ *
+ * @export
+ * @interface RsvpForm
+ */
 export interface FormularioInterface {
 
     name: string,

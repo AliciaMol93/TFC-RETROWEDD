@@ -1,3 +1,9 @@
+/**
+ * Interface que representa un invitado al evento.
+ *
+ * @export
+ * @interface Invitado
+ */
 export interface Invitado {
   nombre_inv: string;
   apellidos: string;
